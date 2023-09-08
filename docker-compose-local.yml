@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  sns-project-redis:
+    container_name: sns-project-redis
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
+    image: devhyuk214/sns-project-redis
+    ports:
+      - "6379:6379"
+  sns-project-database:
+    container_name: sns-project-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: devhyuk214/sns-project-database
+    environment:
+      - MYSQL_DATABASE=sns-project
+      - MYSQL_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./database/config:/etc/mysql/conf.d
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"

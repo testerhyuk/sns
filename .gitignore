@@ -303,3 +303,6 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/react,gradle,java,intellij,intellij+all,intellij+iml,redis
+
+# .env
+.env
