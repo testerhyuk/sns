@@ -67,10 +67,6 @@ function Post() {
   };
 
   const handleWritePost = (event) => {
-    console.log(localStorage.getItem('token'));
-    console.log('title : ' + title);
-    console.log('body : ' + body);
-
     axios({
       url: '/api/v1/posts',
       method: 'POST',
@@ -85,7 +81,6 @@ function Post() {
       .then((res) => {
         setDialogTitle('success');
         setOpen(true);
-        console.log('success');
       })
       .catch((error) => {
         setDialogTitle(error.response.data.resultCode);

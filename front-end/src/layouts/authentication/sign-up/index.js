@@ -67,9 +67,6 @@ function Cover() {
   };
 
   const handleSignUp = (event) => {
-    console.log(userName);
-    console.log(password);
-
     axios({
       url: '/api/v1/users/join',
       method: 'POST',
@@ -81,7 +78,6 @@ function Cover() {
       .then((res) => {
         setDialogTitle('success');
         setOpen(true);
-        console.log('success');
       })
       .catch((error) => {
         setDialogTitle(error.response.data.resultCode);

@@ -56,7 +56,6 @@ const Transition = React.forwardRef(function Transition(
 
 function PostDetail() {
   const { state } = useLocation();
-  console.log(state);
   const [page, setPage] = useState(0);
   const [title, setTitle] = useState(state.title);
   const [writer, setWriter] = useState(state.user.userName);
@@ -69,7 +68,6 @@ function PostDetail() {
   const [comment, setComment] = useState();
 
   const handleLikePost = (event) => {
-    console.log(localStorage.getItem('token'));
     axios({
       url: '/api/v1/posts/' + id + '/likes',
       method: 'POST',
@@ -78,7 +76,6 @@ function PostDetail() {
       },
     })
       .then((res) => {
-        console.log('success');
         handleLikeCounts();
       })
       .catch((error) => {
@@ -87,7 +84,6 @@ function PostDetail() {
   };
 
   const handleLikeCounts = (event) => {
-    console.log(localStorage.getItem('token'));
     axios({
       url: '/api/v1/posts/' + id + '/likes',
       method: 'GET',
@@ -96,7 +92,6 @@ function PostDetail() {
       },
     })
       .then((res) => {
-        console.log('success');
         setLikes(res.data.result);
       })
       .catch((error) => {
@@ -105,15 +100,11 @@ function PostDetail() {
   };
 
   const changePage = (pageNum) => {
-    console.log('change pages');
-    console.log(pageNum);
-    console.log(page);
     setPage(pageNum);
     handleGetComments(pageNum);
   };
 
   const handleGetComments = (pageNum, event) => {
-    console.log('handleGetComments');
     axios({
       url: '/api/v1/posts/' + id + '/comments?size=5&sort=id&page=' + pageNum,
       method: 'GET',
@@ -122,8 +113,6 @@ function PostDetail() {
       },
     })
       .then((res) => {
-        console.log('success');
-        console.log(res);
         setComments(res.data.result.content);
         setTotalPage(res.data.result.totalPages);
       })
@@ -133,7 +122,6 @@ function PostDetail() {
   };
 
   const handleWriteComment = (pageNum, event) => {
-    console.log('handleWriteComment');
     axios({
       url: '/api/v1/posts/' + id + '/comments',
       method: 'POST',
@@ -145,7 +133,6 @@ function PostDetail() {
       },
     })
       .then((res) => {
-        console.log('success');
         handleGetComments();
       })
       .catch((error) => {

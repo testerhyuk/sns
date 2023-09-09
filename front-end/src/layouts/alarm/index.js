@@ -65,15 +65,11 @@ function Alarm() {
   const navigate = useNavigate();
 
   const changePage = (pageNum) => {
-    console.log('change pages');
-    console.log(pageNum);
-    console.log(page);
     setPage(pageNum);
     handleGetAlarm(pageNum);
   };
 
   const handleGetAlarm = (pageNum, event) => {
-    console.log('handleGetAlarm');
     axios({
       url: '/api/v1/users/alarm?size=5&sort=id&page=' + pageNum,
       method: 'GET',
@@ -82,8 +78,6 @@ function Alarm() {
       },
     })
       .then((res) => {
-        console.log('success');
-        console.log(res);
         setAlarms(res.data.result.content);
         setTotalPage(res.data.result.totalPages);
       })

@@ -69,7 +69,6 @@ function Basic() {
   const navigate = useNavigate();
 
   const logout = () => {
-    console.log(localStorage.getItem('token'));
     localStorage.setItem('token', '');
     navigate('/feed');
   };
@@ -83,9 +82,6 @@ function Basic() {
   };
 
   const handleSignIn = (event) => {
-    console.log(userName);
-    console.log(password);
-
     axios({
       url: '/api/v1/users/login',
       method: 'POST',
@@ -95,12 +91,10 @@ function Basic() {
       },
     })
       .then((res) => {
-        console.log('success');
         setDialogTitle('success');
         setDialogMessage('');
         setOpen(true);
         localStorage.setItem('token', res.data.result.token);
-        console.log(res.data.result.token);
       })
       .catch((error) => {
         setDialogTitle(error.response.data.resultCode);

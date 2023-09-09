@@ -53,7 +53,6 @@ const Transition = React.forwardRef(function Transition(
 
 function ModifyPost() {
   const { state } = useLocation();
-  console.log(state);
   const [title, setTitle] = useState(state.title);
   const [body, setBody] = useState(state.body);
   const [id, setId] = useState(state.id);
@@ -70,11 +69,6 @@ function ModifyPost() {
   };
 
   const handleModifyPost = (event) => {
-    console.log(localStorage.getItem('token'));
-    console.log('title : ' + title);
-    console.log('body : ' + body);
-    console.log('id : ' + id);
-
     axios({
       url: '/api/v1/posts/' + id,
       method: 'PUT',
@@ -89,7 +83,6 @@ function ModifyPost() {
       .then((res) => {
         setDialogTitle('success');
         setOpen(true);
-        console.log('success');
       })
       .catch((error) => {
         setDialogTitle(error.response.data.resultCode);

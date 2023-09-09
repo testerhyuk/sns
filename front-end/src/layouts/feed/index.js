@@ -70,8 +70,6 @@ function Feed() {
   const navigate = useNavigate();
 
   const handleDetail = (post) => {
-    console.log('handleDetail');
-    console.log(post);
     navigate('/post-detail', { state: post });
   };
 
@@ -84,15 +82,11 @@ function Feed() {
   };
 
   const changePage = (pageNum) => {
-    console.log('change pages');
-    console.log(pageNum);
-    console.log(page);
     setPage(pageNum);
     handleGetPosts(pageNum);
   };
 
   const handleGetPosts = (pageNum, event) => {
-    console.log('handleGetPosts');
     axios({
       url: '/api/v1/posts?size=5&sort=id&page=' + pageNum,
       method: 'GET',
@@ -101,8 +95,6 @@ function Feed() {
       },
     })
       .then((res) => {
-        console.log('success');
-        console.log(res);
         setPosts(res.data.result.content);
         setTotalPage(res.data.result.totalPages);
       })

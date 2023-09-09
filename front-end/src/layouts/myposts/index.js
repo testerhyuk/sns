@@ -70,19 +70,14 @@ function MyPosts() {
   const navigate = useNavigate();
 
   const handleModify = (post) => {
-    console.log('handleModify');
-    console.log(post);
     navigate('/modify-post', { state: post });
   };
 
   const handleDetail = (post) => {
-    console.log('handleDetail');
-    console.log(post);
     navigate('/post-detail', { state: post });
   };
 
   const handleDelete = (id) => {
-    console.log('handleDelete ' + id);
     axios({
       url: '/api/v1/posts/' + id,
       method: 'DELETE',
@@ -91,9 +86,6 @@ function MyPosts() {
       },
     })
       .then((res) => {
-        console.log('success');
-        console.log(res);
-        console.log(page);
         handleGetPosts(page);
       })
       .catch((error) => {
@@ -111,13 +103,11 @@ function MyPosts() {
   };
 
   const changePage = (pageNum) => {
-    console.log('changePage');
     setPage(pageNum);
     handleGetPosts(pageNum);
   };
 
   const handleGetPosts = (pageNum, event) => {
-    console.log('handleGetPosts');
     axios({
       url: '/api/v1/posts/my?size=5&sort=id&page=' + pageNum,
       method: 'GET',
@@ -126,8 +116,6 @@ function MyPosts() {
       },
     })
       .then((res) => {
-        console.log('success');
-        console.log(res);
         setPosts(res.data.result.content);
         setTotalPage(res.data.result.totalPages);
       })
