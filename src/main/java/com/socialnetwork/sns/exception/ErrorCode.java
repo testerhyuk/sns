@@ -14,6 +14,8 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
     NOTIFICATION_CONNECT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Connect to notification occurs error"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not founded"),
+    INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid"),
     ;
 
     private final HttpStatus status;

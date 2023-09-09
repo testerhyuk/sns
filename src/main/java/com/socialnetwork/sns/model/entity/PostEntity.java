@@ -1,6 +1,5 @@
 package com.socialnetwork.sns.model.entity;
 
-import com.socialnetwork.sns.model.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,27 +9,27 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "post")
 @Setter
 @Getter
-@Entity
-@Table(name = "user")
-@SQLDelete(sql = "UPDATE user SET removed_at = NOW() WHERE id=?")
+@SQLDelete(sql = "UPDATE post SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 @NoArgsConstructor
-public class UserEntity {
-
+public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_name", unique = true)
-    private String userName;
+    @Column(name = "title")
+    private String title;
 
-    private String password;
+    @Column(name = "body", columnDefinition = "TEXT")
+    private String body;
 
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
@@ -40,7 +39,6 @@ public class UserEntity {
 
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
-
 
     @PrePersist
     void registeredAt() {
@@ -52,10 +50,11 @@ public class UserEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static UserEntity of(String userName, String encodedPwd) {
-        UserEntity entity = new UserEntity();
-        entity.setUserName(userName);
-        entity.setPassword(encodedPwd);
+    public static PostEntity of(String title, String body, UserEntity userEntity) {
+        PostEntity entity = new PostEntity();
+        entity.setTitle(title);
+        entity.setBody(body);
+        entity.setUser(userEntity);
         return entity;
     }
 }

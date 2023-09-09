@@ -10,6 +10,20 @@ import java.security.Key;
 import java.util.Date;
 
 public class JwtTokenUtils {
+    public static String getUserName(String token, String key) {
+        return extractClaims(token, key).get("userName", String.class);
+    }
+
+    public static boolean isExpired(String token, String key) {
+        Date expiredDate = extractClaims(token, key).getExpiration();
+        return expiredDate.before(new Date());
+    }
+
+    private static Claims extractClaims(String token, String key) {
+        return Jwts.parserBuilder().setSigningKey(getKey(key))
+                .build().parseClaimsJws(token).getBody();
+    }
+
     private static Key getKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -17,7 +31,7 @@ public class JwtTokenUtils {
 
     public static String generateToken(String username, String key, long expireTime) {
         Claims claims = Jwts.claims();
-        claims.put("username", username);
+        claims.put("userName", username);
 
         return Jwts.builder()
                 .setClaims(claims)
