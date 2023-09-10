@@ -2,11 +2,15 @@ package com.socialnetwork.sns.service;
 
 import com.socialnetwork.sns.exception.ErrorCode;
 import com.socialnetwork.sns.exception.SnsApplicationException;
+import com.socialnetwork.sns.model.Alarm;
 import com.socialnetwork.sns.model.User;
 import com.socialnetwork.sns.model.entity.UserEntity;
+import com.socialnetwork.sns.repository.AlarmRepository;
 import com.socialnetwork.sns.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import com.socialnetwork.sns.repository.UserEntityRepository;
 public class UserService {
     private final UserEntityRepository userEntityRepository;
     private final BCryptPasswordEncoder encoder;
+    private final AlarmRepository alarmRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -41,7 +46,8 @@ public class UserService {
     }
 
     public String login(String userName, String password) {
-        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() ->
+                new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
 
         if(!encoder.matches(password, userEntity.getPassword())) {
             throw new SnsApplicationException(ErrorCode.INVALID_PASSWORD);
@@ -52,4 +58,10 @@ public class UserService {
         return token;
     }
 
+    public Page<Alarm> alarmList(String userName, Pageable pageable) {
+        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() ->
+                new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+
+        return alarmRepository.findAllByUser(userEntity, pageable).map(Alarm::fromEntity);
+    }
 }
