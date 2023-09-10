@@ -1,7 +1,9 @@
 package com.socialnetwork.sns.controller;
 
+import com.socialnetwork.sns.controller.request.PostCommentRequest;
 import com.socialnetwork.sns.controller.request.PostCreateRequest;
 import com.socialnetwork.sns.controller.request.PostModifyRequest;
+import com.socialnetwork.sns.controller.response.CommentResponse;
 import com.socialnetwork.sns.controller.response.PostResponse;
 import com.socialnetwork.sns.controller.response.Response;
 import com.socialnetwork.sns.model.Post;
@@ -46,5 +48,27 @@ public class PostController {
     @GetMapping("/my")
     public Response<Page<PostResponse>> my(Pageable pageable, Authentication authentication) {
         return Response.success(postService.my(authentication.getName(), pageable).map(PostResponse::fromPost));
+    }
+
+    @PostMapping("/{postId}/likes")
+    public Response<Void> like(@PathVariable Long postId, Authentication authentication) {
+        postService.like(postId, authentication.getName());
+        return Response.success();
+    }
+
+    @GetMapping("/{postId}/likes")
+    public Response<Integer> likeCount(@PathVariable Long postId, Authentication authentication) {
+        return Response.success(postService.likeCount(postId));
+    }
+
+    @PostMapping("/{postId}/comments")
+    public Response<Void> comment(@PathVariable Long postId, @RequestBody PostCommentRequest request, Authentication authentication) {
+        postService.comment(postId, authentication.getName(), request.getComment());
+        return Response.success();
+    }
+
+    @GetMapping("/{postId}/comments")
+    public Response<Page<CommentResponse>> commentList(@PathVariable Long postId, Pageable pageable, Authentication authentication) {
+        return Response.success(postService.getComments(postId, pageable).map(CommentResponse::fromComment));
     }
 }
