@@ -1,6 +1,11 @@
 package com.socialnetwork.sns.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.socialnetwork.sns.model.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +27,17 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private UserRole role;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime registeredAt;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updatedAt;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime removedAt;
 
 
@@ -40,31 +54,31 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
     }
 
     @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return this.removedAt == null;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return this.removedAt == null;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return this.removedAt == null;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return this.removedAt == null;
     }

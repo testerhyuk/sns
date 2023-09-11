@@ -6,6 +6,7 @@ import com.socialnetwork.sns.model.Alarm;
 import com.socialnetwork.sns.model.User;
 import com.socialnetwork.sns.model.entity.UserEntity;
 import com.socialnetwork.sns.repository.AlarmRepository;
+import com.socialnetwork.sns.repository.UserCacheRepository;
 import com.socialnetwork.sns.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +24,19 @@ public class UserService {
     private final UserEntityRepository userEntityRepository;
     private final BCryptPasswordEncoder encoder;
     private final AlarmRepository alarmRepository;
+    private final UserCacheRepository userCacheRepository;
 
-    @Value("${jwt.secret-key}")
+    @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredTimeMs;
 
     public User loadUserByUserName(String userName) {
-        return userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
-                new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
+        return userCacheRepository.getUser(userName).orElseGet(() ->
+                userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
+                    new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)))
+        );
     }
 
     @Transactional
@@ -46,10 +50,11 @@ public class UserService {
     }
 
     public String login(String userName, String password) {
-        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() ->
-                new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        User user = loadUserByUserName(userName);
 
-        if(!encoder.matches(password, userEntity.getPassword())) {
+        userCacheRepository.setUser(user);
+
+        if(!encoder.matches(password, user.getPassword())) {
             throw new SnsApplicationException(ErrorCode.INVALID_PASSWORD);
         }
 

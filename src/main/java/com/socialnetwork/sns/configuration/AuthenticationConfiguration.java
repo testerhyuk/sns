@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter {
     private final UserService userService;
 
-    @Value("${jwt.secret-key}")
+    @Value("${JWT_SECRET_KEY}")
     private String key;
 
     @Override
