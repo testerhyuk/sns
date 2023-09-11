@@ -53,6 +53,7 @@ const Transition = React.forwardRef(function Transition(
 
 function ModifyPost() {
   const { state } = useLocation();
+  console.log(state);
   const [title, setTitle] = useState(state.title);
   const [body, setBody] = useState(state.body);
   const [id, setId] = useState(state.id);
