@@ -6,8 +6,11 @@ import com.socialnetwork.sns.controller.response.AlarmResponse;
 import com.socialnetwork.sns.controller.response.Response;
 import com.socialnetwork.sns.controller.response.UserJoinResponse;
 import com.socialnetwork.sns.controller.response.UserLoginResponse;
+import com.socialnetwork.sns.exception.ErrorCode;
+import com.socialnetwork.sns.exception.SnsApplicationException;
 import com.socialnetwork.sns.model.User;
 import com.socialnetwork.sns.service.UserService;
+import com.socialnetwork.sns.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +37,9 @@ public class UserController {
 
     @GetMapping("/alarm")
     public Response<Page<AlarmResponse>> alarm(Pageable pageable, Authentication authentication) {
-        return Response.success(userService.alarmList(authentication.getName(), pageable).map(AlarmResponse::fromAlarm));
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal()
+                , User.class).orElseThrow(() -> new SnsApplicationException(ErrorCode.INTERNAL_SERVER_ERROR,
+                "Casting to User class failed"));
+        return Response.success(userService.alarmList(user.getId(), pageable).map(AlarmResponse::fromAlarm));
     }
 }
