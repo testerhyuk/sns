@@ -7,14 +7,14 @@ import com.socialnetwork.sns.model.AlarmType;
 import com.socialnetwork.sns.model.Comment;
 import com.socialnetwork.sns.model.Post;
 import com.socialnetwork.sns.model.entity.*;
+import com.socialnetwork.sns.model.event.AlarmEvent;
+import com.socialnetwork.sns.producer.AlarmProducer;
 import com.socialnetwork.sns.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class PostService {
     private final CommentEntityRepository commentEntityRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmService alarmService;
+    private final AlarmProducer alarmProducer;
 
     @Transactional
     public void create(String title, String body, String userName) {
@@ -84,12 +85,12 @@ public class PostService {
         });
 
         likeEntityRepository.save(LikeEntity.of(userEntity, postEntity));
-        AlarmEntity alarmEntity = alarmRepository.save(
-                AlarmEntity.of(postEntity.getUser(),
-                        AlarmType.NEW_LIKE_ON_POST,
-                        new AlarmArgs(userEntity.getId(),
-                        postEntity.getId())));
-        alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+
+        alarmProducer.send(new AlarmEvent(
+                postEntity.getUser().getId(),
+                AlarmType.NEW_LIKE_ON_POST,
+                new AlarmArgs(userEntity.getId(), postEntity.getId())
+        ));
     }
 
     public Long likeCount(Long postId) {
@@ -104,12 +105,12 @@ public class PostService {
         PostEntity postEntity = getPostEntityOrException(postId);
 
         commentEntityRepository.save(CommentEntity.of(userEntity, postEntity, comment));
-        AlarmEntity alarmEntity = alarmRepository.save(
-                AlarmEntity.of(postEntity.getUser(),
-                        AlarmType.NEW_COMMENT_ON_POST,
-                        new AlarmArgs(userEntity.getId(),
-                        postEntity.getId())));
-        alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+
+        alarmProducer.send(new AlarmEvent(
+                postEntity.getUser().getId(),
+                AlarmType.NEW_COMMENT_ON_POST,
+                new AlarmArgs(userEntity.getId(), postEntity.getId())
+        ));
     }
 
     public Page<Comment> getComments(Long postId, Pageable pageable) {
